@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-datingappproj-dev-66e63-authRole",
+      "UnauthRoleArn": "arn:aws:iam::590183760509:role/amplify-datingappproj-dev-66e63-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::590183760509:role/amplify-datingappproj-dev-66e63-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-datingappproj-dev-66e63-deployment",
+      "UnauthRoleName": "amplify-datingappproj-dev-66e63-unauthRole",
+      "StackName": "amplify-datingappproj-dev-66e63",
+      "StackId": "arn:aws:cloudformation:us-east-1:590183760509:stack/amplify-datingappproj-dev-66e63/008b3950-0b53-11ef-a6db-0eb71a9451a7",
+      "AmplifyAppId": "d13qrnir8vxub1"
+    },
+    "categories": {
+      "auth": {
+        "datingappproj45d1f835": {}
+      }
+    }
+  }
+}

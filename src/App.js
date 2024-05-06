@@ -1,23 +1,26 @@
-import logo from './logo.svg';
+import {Amplify} from 'aws-amplify';
+import awsmobile from './aws-exports';
+import '@aws-amplify/ui-react/styles.css';
 import './App.css';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Layout from './layout/layout';
+Amplify.configure(awsmobile);
+
+const theme = createTheme({
+  typography: {
+    fontFamily: [
+      'Roboto',
+      'sans-serif',
+    ].join(','),
+  },
+});
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <ThemeProvider theme={theme}>
+        <Layout/>
+      </ThemeProvider>
     </div>
   );
 }
