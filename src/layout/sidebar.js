@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getCurrentUser,signOut } from '@aws-amplify/auth';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -12,11 +13,36 @@ import LogoutIcon from '@mui/icons-material/Logout';
 
 function Sidebar() {
     const [selectedIndex, setSelectedIndex] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    useEffect(() => {
+        checkAuthStatus();
+    }, []);
+
+    const checkAuthStatus = async () => {
+        try {
+            await getCurrentUser();
+            setIsAuthenticated(true);
+        } catch (error) {
+            setIsAuthenticated(false);
+        }
+    };
+
+    const handleLogout = async () => {
+        try {
+            await signOut();
+            setIsAuthenticated(false);
+        } catch (error) {
+            console.error('Error signing out: ', error);
+        }
+    };
 
     const handleListItemClick = (index) => {
         setSelectedIndex(index);
         console.log(index)
     };
+
+    const authItems = isAuthenticated ? ['User Profile', 'Log Out'] : ['Log In'];
 
     return (
         <Drawer
@@ -31,7 +57,6 @@ function Sidebar() {
             }}
         >
             <List>
-
                 <ListItem
                     sx={{
                         display: 'flex',
@@ -41,11 +66,10 @@ function Sidebar() {
                         color: 'white'
                     }}
                 >
-                    Friends 🤡
+                    Friend👬Fusion
                 </ListItem>
 
                 <Divider color='white' />
-
 
                 {['Chat Bot', 'Events', 'My Events'].map((text, index) => (
                     <ListItem
@@ -53,7 +77,7 @@ function Sidebar() {
                         key={text}
                         onClick={() => handleListItemClick(index)}
                         sx={{
-                            backgroundColor: selectedIndex === index ? '#F08D86' : 'inherit', // 被选中时为浅红色
+                            backgroundColor: selectedIndex === index ? '#F08D86' : 'inherit',
                         }}
                     >
                         <ListItemIcon sx={{ color: 'white' }}>
@@ -69,18 +93,18 @@ function Sidebar() {
             <Divider color='white' />
             <List sx={{ marginTop: 'auto' }}>
 
-                {['User Profile', 'Log Out'].map((text, index) => (
+                {authItems.map((text, index) => (
                     <ListItem
                         button
                         key={text}
-                        onClick={() => handleListItemClick(index + 3)}
+                        onClick={() => text === 'Log Out' ? handleLogout() : handleListItemClick(index + 3)}
                         sx={{
-                            backgroundColor: selectedIndex === index + 3 ? '#F08D86' : 'inherit', // 被选中时为浅红色
+                            backgroundColor: selectedIndex === index + 3 ? '#F08D86' : 'inherit',
                         }}
                     >
                         <ListItemIcon sx={{ color: 'white' }}>
-                            {index === 0 && <PersonIcon />}
-                            {index === 1 && <LogoutIcon />}
+                            {text === 'User Profile' && <PersonIcon />}
+                            {text === 'Log Out' && <LogoutIcon />}
                         </ListItemIcon>
                         <ListItemText primary={text} sx={{ color: 'white' }} />
                     </ListItem>

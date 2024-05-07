@@ -4,6 +4,8 @@ import LoginPage from "../pages/login";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AuthGuard from './AuthGuard';
 import EventsPage from '../pages/events';
+import UserPage from '../pages/user';
+
 const Layout = () => {
   return (
     <>
@@ -15,6 +17,14 @@ const Layout = () => {
 
         <Routes>
           <Route path="/events" element={<AuthGuard>
+            <EventsPage />
+          </AuthGuard>
+          } />
+        </Routes>
+
+
+        <Routes>
+          <Route path="/" element={<AuthGuard>
             <EventsPage />
           </AuthGuard>
           } />

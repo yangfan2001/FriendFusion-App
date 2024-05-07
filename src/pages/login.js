@@ -1,25 +1,19 @@
 
-import { signIn } from 'aws-amplify/auth';  // <== use this directly
 import { Authenticator } from '@aws-amplify/ui-react';
 
 
-const username = 'fy2187@nyu.edu';
-const password = 'Yf123456';
-
 export default function LoginPage() {
-  const handleSignIn = async () => {
-    try {
-      const result = await signIn({
-        username,
-        password
-      })
-    } catch (error) {
-      console.log(error)
-    }
-  }
+
+  const centerStyle = {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100vh', // Use full viewport height to center vertically in the entire view
+  };
+
+
   return (
-    <div>
-      <button onClick={handleSignIn} title="SignIn" />
+    <div style={centerStyle}>
       <Authenticator>
         {({ signOut, user }) => (
           <main>
