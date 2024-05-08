@@ -1,5 +1,6 @@
 
 import { Authenticator } from '@aws-amplify/ui-react';
+import '@aws-amplify/ui-react/styles.css';
 
 
 export default function LoginPage() {
@@ -14,7 +15,9 @@ export default function LoginPage() {
 
   return (
     <div style={centerStyle}>
-      <Authenticator>
+      <Authenticator signUpAttributes={[
+      'name',
+    ]}>
         {({ signOut, user }) => (
           <main>
             <h1>Hello {user?.username}</h1>

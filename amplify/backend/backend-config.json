@@ -1,22 +1,7 @@
 {
-  "api": {
-    "api83f8dcf9": {
-      "dependsOn": [
-        {
-          "attributes": [
-            "Name",
-            "Arn"
-          ],
-          "category": "function",
-          "resourceName": "testfunc"
-        }
-      ],
-      "providerPlugin": "awscloudformation",
-      "service": "API Gateway"
-    }
-  },
+  "api": {},
   "auth": {
-    "datingappproj45d1f835": {
+    "datingappproj06640064": {
       "customAuth": false,
       "dependsOn": [],
       "frontendAuthConfig": {
@@ -43,11 +28,5 @@
       "service": "Cognito"
     }
   },
-  "function": {
-    "testfunc": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda"
-    }
-  }
+  "function": {}
 }

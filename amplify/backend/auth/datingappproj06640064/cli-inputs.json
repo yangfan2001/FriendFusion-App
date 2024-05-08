@@ -1,10 +1,10 @@
 {
   "version": "1",
   "cognitoConfig": {
-    "identityPoolName": "datingappproj45d1f835_identitypool_45d1f835",
+    "identityPoolName": "datingappproj06640064_identitypool_06640064",
     "allowUnauthenticatedIdentities": false,
-    "resourceNameTruncated": "dating45d1f835",
-    "userPoolName": "datingappproj45d1f835_userpool_45d1f835",
+    "resourceNameTruncated": "dating06640064",
+    "userPoolName": "datingappproj06640064_userpool_06640064",
     "autoVerifiedAttributes": [
       "email"
     ],
@@ -31,10 +31,10 @@
     "userpoolClientReadAttributes": [
       "email"
     ],
-    "userpoolClientLambdaRole": "dating45d1f835_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "dating06640064_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "sharedId": "45d1f835",
-    "resourceName": "datingappproj45d1f835",
+    "sharedId": "06640064",
+    "resourceName": "datingappproj06640064",
     "authSelections": "identityPoolAndUserPool",
     "useDefault": "default",
     "usernameAttributes": [
