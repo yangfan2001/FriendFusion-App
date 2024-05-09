@@ -1,7 +1,7 @@
 // src/contexts/AuthContext.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Hub } from 'aws-amplify/utils'
-import { getCurrentUser, fetchUserAttributes} from '@aws-amplify/auth';
+import { getCurrentUser, fetchUserAttributes } from '@aws-amplify/auth';
 
 
 const AuthContext = createContext();
@@ -12,28 +12,41 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         checkCurrentUser();
 
-        const listener = (data) => {
-            if (data.payload.event === 'signIn') {
-                console.log('User signed in');
-                checkCurrentUser();
-            } else if (data.payload.event === 'signOut') {
-                console.log('User signed out');
-                setUser(null);
+        const hubListenerCancel  = Hub.listen('auth', ({ payload }) => {
+            switch (payload.event) {
+                case 'signedIn':
+                    checkCurrentUser();
+                    console.log('user have been signedIn successfully.');
+                    break;
+                case 'signedOut':
+                    console.log('user have been signedOut successfully.');
+                    setUser(null);
+                    break;
+                case 'tokenRefresh':
+                    console.log('auth tokens have been refreshed.');
+                    break;
+                case 'tokenRefresh_failure':
+                    console.log('failure while refreshing auth tokens.');
+                    break;
+                case 'signInWithRedirect':
+                    console.log('signInWithRedirect API has successfully been resolved.');
+                    break;
+                case 'signInWithRedirect_failure':
+                    console.log('failure while trying to resolve signInWithRedirect API.');
+                    break;
             }
-        };
+        });
 
-        Hub.listen('auth', listener);
-
-        
+        return () => {
+            hubListenerCancel();
+        }
     }, []);
 
     const checkCurrentUser = async () => {
         try {
-            const currentUser = await getCurrentUser();
             const attributes = await fetchUserAttributes();
             console.log('User attributes: ', attributes)
-            console.log('Current user: ', currentUser)
-            setUser(currentUser);
+            setUser(attributes);
         } catch (error) {
             console.log('No current user');
             setUser(null);

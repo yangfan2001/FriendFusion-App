@@ -10,28 +10,19 @@ import ChatIcon from '@mui/icons-material/Chat';
 import EventIcon from '@mui/icons-material/Event';
 import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
-
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 function Sidebar() {
     const [selectedIndex, setSelectedIndex] = useState(null);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const navigate = useNavigate();
+    const { user } = useAuth();
 
-    useEffect(() => {
-        checkAuthStatus();
-    }, []);
-
-    const checkAuthStatus = async () => {
-        try {
-            await getCurrentUser();
-            setIsAuthenticated(true);
-        } catch (error) {
-            setIsAuthenticated(false);
-        }
-    };
+    
 
     const handleLogout = async () => {
         try {
             await signOut();
-            setIsAuthenticated(false);
+            navigate('/login');
         } catch (error) {
             console.error('Error signing out: ', error);
         }
@@ -39,10 +30,28 @@ function Sidebar() {
 
     const handleListItemClick = (index) => {
         setSelectedIndex(index);
+        switch (index) {
+            case 0:
+                console.log('Events');
+                navigate('/events');
+                break;
+            case 1:
+                console.log('Events');
+                navigate('/my-events');
+                
+                break;
+            case 2:
+                navigate('/');
+                break;
+            case 3:
+                break;
+            default:
+                break;
+            }
         console.log(index)
     };
 
-    const authItems = isAuthenticated ? ['User Profile', 'Log Out'] : ['Log In'];
+    const authItems = user?['User Profile', 'Log Out']:[];
 
     return (
         <Drawer
@@ -71,7 +80,7 @@ function Sidebar() {
 
                 <Divider color='white' />
 
-                {['Chat Bot', 'Events', 'My Events'].map((text, index) => (
+                {['Events', 'My Events'].map((text, index) => (
                     <ListItem
                         button
                         key={text}
@@ -81,9 +90,8 @@ function Sidebar() {
                         }}
                     >
                         <ListItemIcon sx={{ color: 'white' }}>
-                            {index === 0 && <ChatIcon />}
+                            {index === 0 && <EventIcon />}
                             {index === 1 && <EventIcon />}
-                            {index === 2 && <EventIcon />}
                         </ListItemIcon>
                         <ListItemText primary={text} sx={{ color: 'white' }} />
                     </ListItem>
@@ -97,9 +105,9 @@ function Sidebar() {
                     <ListItem
                         button
                         key={text}
-                        onClick={() => text === 'Log Out' ? handleLogout() : handleListItemClick(index + 3)}
+                        onClick={() => text === 'Log Out' ? handleLogout() : handleListItemClick(index + 2)}
                         sx={{
-                            backgroundColor: selectedIndex === index + 3 ? '#F08D86' : 'inherit',
+                            backgroundColor: selectedIndex === index + 2 ? '#F08D86' : 'inherit',
                         }}
                     >
                         <ListItemIcon sx={{ color: 'white' }}>
