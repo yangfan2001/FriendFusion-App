@@ -18,6 +18,11 @@ Amplify.configure({
         endpoint:
           'https://tu21cxrp1j.execute-api.us-east-1.amazonaws.com/dev',
         region: 'us-east-1' // Optional
+      },
+      FriendAPI: {
+        endpoint:
+          'https://nrt4rmx3hi.execute-api.us-east-1.amazonaws.com/test',
+        region: 'us-east-1' // Optional
       }
     }
   }

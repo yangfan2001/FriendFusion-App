@@ -6,7 +6,7 @@ import AuthGuard from './AuthGuard';
 import EventsPage from '../pages/events';
 import UserPage from '../pages/user';
 import MyEventsPage from '../pages/myEvents';
-
+import AddEventPage from '../pages/addEvent';
 const Layout = () => {
   return (
     <Router>
@@ -17,6 +17,7 @@ const Layout = () => {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/events" element={<AuthGuard><EventsPage /></AuthGuard>} />
             <Route path="/my-events" element={<AuthGuard><MyEventsPage /></AuthGuard>} />
+            <Route path="/events/add" element={<AuthGuard><AddEventPage /></AuthGuard>} />
             <Route path="/" element={<AuthGuard><UserPage /></AuthGuard>} />
           </Routes>
         </div>

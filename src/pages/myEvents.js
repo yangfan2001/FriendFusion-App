@@ -1,8 +1,16 @@
+import React, { useState } from 'react';
 import { Container, Paper, Box, Typography, Button } from '@mui/material';
 import CelebrationIcon from '@mui/icons-material/Celebration';
 import DataTable from '../components/DataTable';
-
+import { useNavigate } from 'react-router-dom';
 export default function MyEventsPage() {
+    const navigate = useNavigate();
+
+    const handleAddEvent = () => {
+        navigate('/events/add');
+    };
+
+
     return (
         <Container>
             <Paper elevation={3} sx={{ padding: 3, margin: 2, height: 600, overflow: 'auto' }}>
@@ -18,7 +26,7 @@ export default function MyEventsPage() {
                         </Typography>
                         <CelebrationIcon sx={{ color: 'grey', marginLeft: 1 }} />
                     </Box>
-                    <Button variant="contained" color="primary" sx={{ marginRight: 1 }}>
+                    <Button variant="contained" color="primary" sx={{ marginRight: 1 }} onClick={handleAddEvent}>
                         Add Event
                     </Button>
                 </Box>
@@ -28,6 +36,7 @@ export default function MyEventsPage() {
                     { field: 'location', headerName: 'Location', width: 200 },
                     { field: 'description', headerName: 'Description', width: 200 },
                 ]} />
+
             </Paper>
         </Container>
     );
