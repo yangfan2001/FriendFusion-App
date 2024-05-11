@@ -1,7 +1,7 @@
 // src/contexts/AuthContext.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Hub } from 'aws-amplify/utils'
-import { getCurrentUser, fetchUserAttributes } from '@aws-amplify/auth';
+import { fetchUserAttributes, fetchAuthSession } from '@aws-amplify/auth';
 
 
 const AuthContext = createContext();
@@ -45,8 +45,10 @@ export const AuthProvider = ({ children }) => {
     const checkCurrentUser = async () => {
         try {
             const attributes = await fetchUserAttributes();
-            console.log('User attributes: ', attributes)
-            setUser(attributes);
+            const session = await fetchAuthSession();
+            const token = session.tokens?.idToken;
+            
+            setUser({...attributes, token});
         } catch (error) {
             console.log('No current user');
             setUser(null);

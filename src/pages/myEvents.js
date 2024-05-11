@@ -3,6 +3,8 @@ import { Container, Paper, Box, Typography, Button } from '@mui/material';
 import CelebrationIcon from '@mui/icons-material/Celebration';
 import DataTable from '../components/DataTable';
 import { useNavigate } from 'react-router-dom';
+
+
 export default function MyEventsPage() {
     const navigate = useNavigate();
 
