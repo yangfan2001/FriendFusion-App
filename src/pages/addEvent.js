@@ -1,19 +1,31 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { Container, Paper, Box, Typography, Button, SvgIcon } from '@mui/material';
 import { AddressAutofill } from '@mapbox/search-js-react';
 import EventIcon from '@mui/icons-material/Event';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PeopleIcon from '@mui/icons-material/People';
 import PlaceIcon from '@mui/icons-material/Place';
+import { useAuth } from '../contexts/AuthContext';
+import { useSnackbar } from '../contexts/SnackbarProvier';
+import { post } from 'aws-amplify/api';
 
 const token = 'pk.eyJ1IjoieWFuZ2ZhbjIwMDE1OCIsImEiOiJjbHZuajhhZDEwZHB0MmxzNHYwYm9zd2JkIn0.r8Sd1ZGmA2mZrsz00j6kIA'; // 使用你的 Mapbox Access Token
 
+
+const EventTypeArr = ["badminton", "bars", "restaurants", "movietheaters",
+"citywalk", "hiking", "coffee", "escapegames", "dog_parks",
+"basketballcourts", "climbing", "fishing", "galleries", "museums", "musicvenues"]
 export default function AddEventsPage() {
+    const { user } = useAuth();
+    const snackbar = useSnackbar();
+
     const [eventData, setEventData] = useState({
         type: '',
         location: '',
         startTime: '',
-        numberOfPeople: ''
+        numberOfPeople: '',
+        longitude: '',
+        latitude: ''
     });
 
     const handleInputChange = (e) => {
@@ -29,6 +41,7 @@ export default function AddEventsPage() {
         const fullAddress = properties.full_address
         const [Longitude, Latitude] = geometry.coordinates;
 
+        setEventData(prev => ({ ...prev, longitude: Longitude, latitude: Latitude, location: fullAddress}));
         console.log('Full Address:', fullAddress);
         console.log('Longitude:', Longitude);
         console.log('Latitude:', Latitude);
@@ -36,13 +49,38 @@ export default function AddEventsPage() {
         setEventData(prev => ({ ...prev, location: fullAddress}));
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = async()=> {
         if (!eventData.type || !eventData.location || !eventData.startTime || !eventData.numberOfPeople) {
             alert('Please fill out all fields.');
             return;
         }
-        console.log('Form data:', eventData);
-        alert('Form Submitted Successfully!');
+        const toSendData = {
+            EventType: eventData.type,
+            Location: eventData.location,
+            StartTime: eventData.startTime,
+            NumberOfPeople: eventData.numberOfPeople,
+            Longitude: eventData.longitude,
+            Latitude: eventData.latitude
+        };
+        
+        try {
+            const restOperation = post({ 
+                apiName: 'FriendAPI',
+                path: '/event' 
+            ,options: {
+                headers: {
+                    Authorization: user.token
+                },
+                body: toSendData
+            }});
+            const { body } = await restOperation.response
+            const response = await body.json()
+            console.log('POST call succeeded: ', response);
+            snackbar('Event Created Successfully!', 'success');
+        }catch(error){
+            console.log('POST call failed: ', error);
+            snackbar('Error in Creating Event!', 'error');
+        }
     };
 
     return (
@@ -61,9 +99,10 @@ export default function AddEventsPage() {
                         onChange={handleInputChange}
                         style={inputStyle}
                     >
-                        <option value="Eating">Eating</option>
-                        <option value="Sports">Sports</option>
-                        <option value="Reading">Reading</option>
+                        {EventTypeArr.map((type) => (
+                            <option key={type} value={type}>{type}</option>
+                        
+                        ))}
                     </select>
                     <label htmlFor="startTime" style={labelStyle}>
                         <SvgIcon component={AccessTimeIcon} sx={{ verticalAlign: 'middle' }} /> Start Time

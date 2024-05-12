@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import Map, { Marker } from 'react-map-gl';
 import { Paper, Button, Typography, Grid, TextField, InputAdornment, Box, Tooltip } from '@mui/material';
 import "mapbox-gl/dist/mapbox-gl.css";
-import { get } from 'aws-amplify/api';
+import { get,post } from 'aws-amplify/api';
 import EventIcon from '@mui/icons-material/Event';
 import PeopleIcon from '@mui/icons-material/People';
 import PlaceIcon from '@mui/icons-material/Place';
 import TimerIcon from '@mui/icons-material/Timer';
 import TypeIcon from '@mui/icons-material/LabelImportant';
-
 import { useAuth } from '../contexts/AuthContext';
+import { useSnackbar } from '../contexts/SnackbarProvier';
 
 const TOKEN = 'pk.eyJ1IjoieWFuZ2ZhbjIwMDE1OCIsImEiOiJjbHZuajhhZDEwZHB0MmxzNHYwYm9zd2JkIn0.r8Sd1ZGmA2mZrsz00j6kIA';
 
@@ -19,8 +19,9 @@ const TOKEN = 'pk.eyJ1IjoieWFuZ2ZhbjIwMDE1OCIsImEiOiJjbHZuajhhZDEwZHB0MmxzNHYwYm
 const EventsPage = () => {
 
   const { user } = useAuth();
-  const [eventDetails, setEventDetails] = useState('Click on a marker to see details.');
+  const [eventDetails, setEventDetails] = useState('');
   const [events, setEvents] = useState([]); // [event1, event2, event3, ...
+  const snackbar = useSnackbar();
 
   const getAllEvents = async () => {
     try {
@@ -34,11 +35,39 @@ const EventsPage = () => {
       }});
       const { body } = await restOperation.response
       const response = await body.json()
+      
       setEvents(response);
       console.log('GET call succeeded: ', response);
     } catch (error) {
       console.log('GET call failed: ', error);
     }
+  }
+
+  const JoinEvent = async () => {
+    try {
+      const restOperation = post({ 
+        apiName: 'FriendAPI',
+        path: '/event/join' 
+      ,options: {
+        headers: {
+          Authorization: user.token
+        },
+        body: {
+          "eid": eventDetails.Eid
+        }
+      }});
+      const { body } = await restOperation.response
+      const response = await body.json()
+
+      console.log('GET call succeeded: ', response);
+      snackbar('Join Event Successfully!', 'success');
+
+      
+    } catch (error) {
+      console.log('GET call failed: ', error);
+      snackbar('Error in Joining Event!', 'error');
+    }
+  
   }
 
   useEffect(() => {
@@ -175,7 +204,7 @@ const EventsPage = () => {
           />
         </Grid>
       </Grid>
-      <Button variant="contained" color="primary" style={{ marginTop: '20px' }} onClick={() => alert('Joined Event!')}>
+      <Button variant="contained" color="primary" style={{ marginTop: '20px' }} onClick={JoinEvent} disabled={eventDetails===''}>
         Join Event
       </Button>
     </Paper>

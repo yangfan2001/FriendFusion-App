@@ -4,6 +4,7 @@ import './App.css';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Layout from './layout/layout';
 import { AuthProvider } from './contexts/AuthContext';
+import { SnackbarProvider } from './contexts/SnackbarProvier';
 Amplify.configure(awsmobile);
 const existingConfig = Amplify.getConfig();
 
@@ -40,6 +41,7 @@ const theme = createTheme({
 
 function App() {
   return (
+    <SnackbarProvider>
     <AuthProvider>
       <div className="App">
         <ThemeProvider theme={theme}>
@@ -47,6 +49,7 @@ function App() {
         </ThemeProvider>
       </div>
     </AuthProvider>
+  </SnackbarProvider>
   );
 }
 

@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { updateUserAttributes } from 'aws-amplify/auth';
 import { Container, Paper, TextField, Grid, Button, MenuItem, FormControl, InputLabel, Select, Typography, Box } from "@mui/material";
 import Face6Icon from '@mui/icons-material/Face6' // Importing an icon for decorative purposes
-
+import { get,post } from 'aws-amplify/api';
 import { useAuth } from '../contexts/AuthContext';
+import { useSnackbar } from '../contexts/SnackbarProvier';
 
 const ReadOnlyTextField = ({
   label,
@@ -21,8 +22,11 @@ const ReadOnlyTextField = ({
   />
 );
 
+
+
 function UserPage() {
-  const { user, setUser } = useAuth();
+  const { user } = useAuth();
+  const snackbar = useSnackbar();
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({
     interests: [],
@@ -31,19 +35,56 @@ function UserPage() {
     interests: [],
   });
 
-  useEffect(() => {
-    if (user) {
-      const userInterests = user.interests || [];
-      setFormData({
-        interests: userInterests,
-      });
-      setOriginalData({
-        interests: userInterests,
-      });
+
+  const changeUserInterests = async (interests) => {
+    try {
+      const restOperation = post({ 
+        apiName: 'FriendAPI',
+        path: '/user' 
+      ,options: {
+        headers: {
+          Authorization: user.token
+        },
+        body: {
+          "Interests": interests
+        }
+      }});
+      const { body } = await restOperation.response
+      const response = await body.json()
+      snackbar('Update User Profile Successfully!', 'success');
+    } catch (error) {
+      snackbar('Error In Edit User Profile!', 'error');
     }
-  }, [user]);
+  }
+  
+  const getUserInterests = async () => {
+    try {
+      const restOperation = get({ 
+        apiName: 'FriendAPI',
+        path: '/user' 
+      ,options: {
+        headers: {
+          Authorization: user.token
+        }
+      }});
+      const { body } = await restOperation.response
+      const response = await body.json()
+      const interests = response.Interests
+      setFormData({
+        interests: interests,
+      });
+      console.log('GET call succeeded: ', response);
+    } catch (error) {
+      console.log('GET call failed: ', error);
+    }
+  }
+
+  useEffect(() => {
+    getUserInterests()
+  }, []);
 
   const handleEdit = () => {
+
     setEditMode(true);
   };
 
@@ -55,21 +96,13 @@ function UserPage() {
   };
 
   const handleSave = async () => {
-
     // if data are the same, do not update
     if (formData.interests === originalData.interests) {
       setEditMode(false);
       return;
     }
-    try {
-      console.log('Updating user attributes:', formData.interests);
-      setOriginalData({
-        interests: formData.interests,
-      });
-      setEditMode(false);
-    } catch (error) {
-      console.error('Error updating user attributes:', error);
-    }
+    changeUserInterests(formData.interests)
+    setEditMode(false);
   };
 
   const handleChange = (event) => {
