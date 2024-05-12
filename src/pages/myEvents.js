@@ -1,16 +1,93 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Paper, Box, Typography, Button } from '@mui/material';
 import CelebrationIcon from '@mui/icons-material/Celebration';
 import DataTable from '../components/DataTable';
 import { useNavigate } from 'react-router-dom';
+import { get,post } from 'aws-amplify/api';
+import { useAuth } from '../contexts/AuthContext';
+import { useSnackbar } from '../contexts/SnackbarProvier';
 
 
 export default function MyEventsPage() {
+    const { user } = useAuth();
+    const snackbar = useSnackbar();
     const navigate = useNavigate();
+
+    const [events, setEvents ]= useState([]);
 
     const handleAddEvent = () => {
         navigate('/events/add');
     };
+
+    const getAllMyEvents = async () => {
+        try {
+            const restOperation = get({ 
+              apiName: 'FriendAPI',
+              path: '/event/user' 
+            ,options: {
+              headers: {
+                Authorization: user.token
+              }
+            }});
+            const { body } = await restOperation.response
+            const response = await body.json()
+            // create  a new row with id
+            response.events = response.events.map((event) => ({ ...event, id: event.Eid }));
+            setEvents(response.events);
+
+            console.log('GET call succeeded: ', response);
+          } catch (error) {
+            console.log('GET call failed: ', error);
+          }
+    }
+
+
+    const handleQuitEvent = async (eventId) => {
+        // Implement API call to quit the event
+        try {
+            const restOperation = post({ 
+              apiName: 'FriendAPI',
+              path: '/event/quit' 
+            ,options: {
+              headers: {
+                Authorization: user.token
+              },
+              body: {
+                "eid": eventId
+              }
+            }});
+            const { body } = await restOperation.response
+            const response = await body.json()
+            console.log('POST call succeeded: ', response);
+            snackbar('Quit Event Successfully!', 'success');
+            // Update the UI
+            setEvents(events.filter(event => event.Eid !== eventId));
+          } catch (error) {
+            console.log('POST call failed: ', error);
+            snackbar('Error in Quitting Event!', 'error');
+          }
+        console.log('Quit event:', eventId);
+        // Optionally update the UI to reflect the change
+    };
+
+
+
+    useEffect(() => {
+        getAllMyEvents();
+    }, []);
+
+
+    const columns = [
+        { field: 'Type', headerName: 'Type', width: 130 },
+        { field: 'StartTime', headerName: 'Start Time', width: 200 },
+        { field: 'Address', headerName: 'Address', width: 200 },
+        { field: 'NumberOfPeople', headerName: 'Number of People', width: 180 },
+        { field: 'action', headerName: 'Action', width: 150, renderCell: (params) => (
+            <Button color="error" onClick={() => handleQuitEvent(params.id)}>Quit</Button>
+        )},
+    ];
+
+
 
 
     return (
@@ -32,12 +109,7 @@ export default function MyEventsPage() {
                         Add Event
                     </Button>
                 </Box>
-                <DataTable rows={[]} columns={[
-                    { field: 'name', headerName: 'Name', width: 200 },
-                    { field: 'date', headerName: 'Date', width: 200 },
-                    { field: 'location', headerName: 'Location', width: 200 },
-                    { field: 'description', headerName: 'Description', width: 200 },
-                ]} />
+                <DataTable rows={events} columns={columns} />
 
             </Paper>
         </Container>

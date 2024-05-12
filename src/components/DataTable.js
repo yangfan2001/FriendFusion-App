@@ -11,6 +11,8 @@ const DataTable= ({ showSearch=true,rows, columns, ...props }) => {
         setSearchText(event.target.value);
     };
 
+    console.log('rows:', rows);
+
     const filteredRows = rows.filter((row) => {
         return columns.some((column) => {
             const value = row[column.field];
