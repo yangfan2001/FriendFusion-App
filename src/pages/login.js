@@ -1,7 +1,8 @@
 
+import React from 'react';
 import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
-
+import { Navigate } from 'react-router-dom';
 
 export default function LoginPage() {
 
@@ -15,16 +16,13 @@ export default function LoginPage() {
 
   return (
     <div style={centerStyle}>
-      <Authenticator signUpAttributes={[
-      'name',
-    ]}>
+      <Authenticator signUpAttributes={['name']}>
         {({ signOut, user }) => (
           <main>
-            <h1>Hello {user?.username}</h1>
-            <button onClick={signOut}>Sign out</button>
+            {user && <Navigate to="/" replace={true} />} 
           </main>
         )}
       </Authenticator>
     </div>
   );
-} 
+}
